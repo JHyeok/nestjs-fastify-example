@@ -1,5 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import request from 'supertest';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { UserRepository } from 'src/api/user/user.repository';
@@ -22,22 +25,25 @@ class MockTypeOrmConfigServer implements TypeOrmOptionsFactory {
 const mockTypeOrmConfigService = new MockTypeOrmConfigServer();
 
 describe('UserController (e2e)', () => {
-  let app: INestApplication;
+  let app: NestFastifyApplication;
   let userRepository: UserRepository;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
     })
       .overrideProvider(TypeOrmConfigService)
       .useValue(mockTypeOrmConfigService)
       .compile();
 
-    app = module.createNestApplication();
-    userRepository = module.get<UserRepository>(UserRepository);
+    app = moduleRef.createNestApplication<NestFastifyApplication>(
+      new FastifyAdapter(),
+    );
+    userRepository = moduleRef.get<UserRepository>(UserRepository);
 
     setupApp(app);
     await app.init();
+    await app.getHttpAdapter().getInstance().ready();
   });
 
   beforeEach(async () => {

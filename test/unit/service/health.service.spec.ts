@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { HealthService } from 'src/api/health/health.service';
 
 describe('HealthService', () => {
   let healthService: HealthService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef = await Test.createTestingModule({
       providers: [HealthService],
     }).compile();
 
-    healthService = module.get<HealthService>(HealthService);
+    healthService = moduleRef.get<HealthService>(HealthService);
   });
 
   describe('Health Check', () => {

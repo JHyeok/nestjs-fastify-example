@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { UserModule } from 'src/api/user/user.module';
 import { getTestMysqlModule } from '../util/get-test-mysql.module';
 import { UserService } from 'src/api/user/user.service';
@@ -15,14 +15,14 @@ describe('UserService (Integration)', () => {
   let userRepository: UserRepository;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleRef = await Test.createTestingModule({
       imports: [UserModule, getTestMysqlModule()],
       providers: [UserService, UserRepository],
     }).compile();
 
-    sut = module.get<UserService>(UserService);
-    dataSource = module.get<DataSource>(DataSource);
-    userRepository = module.get<UserRepository>(UserRepository);
+    sut = moduleRef.get<UserService>(UserService);
+    dataSource = moduleRef.get<DataSource>(DataSource);
+    userRepository = moduleRef.get<UserRepository>(UserRepository);
   });
 
   beforeEach(async () => {
